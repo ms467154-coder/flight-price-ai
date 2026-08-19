@@ -1,33 +1,74 @@
+import { useMemo, useState } from "react";
+import { Link } from "wouter";
+import { ArrowRight, BarChart3, CheckCircle2, Clock3, Plane, ShieldCheck, Sparkles, TrendingDown, UserRound } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
-import { Streamdown } from 'streamdown';
+import { startLogin } from "@/const";
+import { trpc } from "@/lib/trpc";
 
-/**
- * All content in this page are only for example, replace with your own feature implementation
- * When building pages, remember your instructions in Frontend Workflow, Frontend Best Practices, Design Guide and Common Pitfalls
- */
+const initialForm = { airline: "Vistara", flight: "UK-880", source_city: "Delhi", destination_city: "Mumbai", departure_time: "Evening", arrival_time: "Night", stops: "one", class: "Economy", duration: "2.5", days_left: "14" };
+const options = {
+  airline: ["AirAsia", "Air_India", "GO_FIRST", "Indigo", "SpiceJet", "Vistara"],
+  flight: ["UK-880", "UK-812", "AI-526", "6E-2168", "SG-8709"],
+  source_city: ["Bangalore", "Chennai", "Delhi", "Hyderabad", "Kolkata", "Mumbai"],
+  destination_city: ["Bangalore", "Chennai", "Delhi", "Hyderabad", "Kolkata", "Mumbai"],
+  departure_time: ["Early_Morning", "Morning", "Afternoon", "Evening", "Night", "Late_Night"],
+  arrival_time: ["Early_Morning", "Morning", "Afternoon", "Evening", "Night", "Late_Night"],
+  stops: ["zero", "one", "two_or_more"],
+  class: ["Economy", "Business"],
+};
+
+type FormState = typeof initialForm;
+
+function formatLabel(value: string) { return value.replaceAll("_", " ").replace(/\b\w/g, char => char.toUpperCase()); }
+function formatMetric(value: unknown, digits = 2) { return typeof value === "number" ? value.toLocaleString(undefined, { maximumFractionDigits: digits }) : "—"; }
+
 export default function Home() {
-  // The useAuth hook provides authentication state.
-  // To implement login/logout, call logout(), or start login from an event
-  // handler: onClick={() => startLogin()} (imported from "@/const"). Never call
-  // startLogin() during render (no href={startLogin()}) — it mints a one-time
-  // nonce cookie and must run only at the moment of navigation.
-  let { user, loading, error, isAuthenticated, logout } = useAuth();
+  const { user, loading } = useAuth();
+  const { data: manifest, isLoading: manifestLoading } = trpc.model.manifest.useQuery();
+  const [form, setForm] = useState<FormState>(initialForm);
+  const [activeView, setActiveView] = useState<"home" | "predict" | "history" | "insights">("home");
+  const [result, setResult] = useState<{ predictedPrice: number; model: typeof manifest } | null>(null);
+  const prediction = trpc.predictions.create.useMutation({ onSuccess: data => setResult({ predictedPrice: data.predictedPrice, model: data.model }) });
+  const history = trpc.predictions.history.useQuery(undefined, { enabled: Boolean(user) && activeView === "history" });
 
-  // If theme is switchable in App.tsx, we can implement theme toggling like this:
-  // const { theme, toggleTheme } = useTheme();
+  const metrics = manifest?.test_metrics;
+  const featureCount = manifest?.features?.length ?? 0;
+  const handleSubmit = (event: React.FormEvent) => { event.preventDefault(); if (!user) { startLogin(); return; } prediction.mutate({ ...form, duration: Number(form.duration), days_left: Number(form.days_left) }); };
+  const setField = (key: keyof FormState, value: string) => setForm(current => ({ ...current, [key]: value }));
+  const nav = (view: typeof activeView) => setActiveView(view);
 
-  return (
-    <div className="min-h-screen flex flex-col">
-      <main>
-        {/* Example: lucide-react for icons */}
-        <Loader2 className="animate-spin" />
-        Example Page
-        {/* Example: Streamdown for markdown rendering */}
-        <Streamdown>Any **markdown** content</Streamdown>
-        <Button variant="default">Example Button</Button>
-      </main>
-    </div>
-  );
+  return <div className="min-h-screen bg-[#FAF8F5] text-[#2B2521]">
+    <header className="sticky top-0 z-20 border-b border-[#E8DED6] bg-[#FAF8F5]/95 backdrop-blur">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8">
+        <button onClick={() => nav("home")} className="flex items-center gap-3 text-left" aria-label="Go to Flight Price AI home">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#C0392B] text-white shadow-[0_8px_24px_rgba(192,57,43,.2)]"><Plane className="h-5 w-5" /></span>
+          <span><span className="block text-sm font-semibold tracking-[.18em] text-[#C0392B]">FLIGHT PRICE AI</span><span className="block text-xs text-[#80736C]">by Mohamed Salem</span></span>
+        </button>
+        <nav className="hidden items-center gap-7 text-sm font-medium text-[#655B54] md:flex" aria-label="Primary navigation">
+          <button onClick={() => nav("home")} className="transition-colors hover:text-[#C0392B]">Overview</button>
+          <button onClick={() => nav("predict")} className="transition-colors hover:text-[#C0392B]">Predict</button>
+          {user && <button onClick={() => nav("history")} className="transition-colors hover:text-[#C0392B]">History</button>}
+          <button onClick={() => nav("insights")} className="transition-colors hover:text-[#C0392B]">Model</button>
+        </nav>
+        {loading ? <div className="h-10 w-24 animate-pulse rounded-full bg-[#EEE6DF]" /> : user ? <button onClick={() => nav("predict")} className="flex items-center gap-2 rounded-full border border-[#E3D6CC] bg-white px-4 py-2 text-sm font-medium shadow-sm"><UserRound className="h-4 w-4 text-[#C0392B]" />{user.name || "Workspace"}</button> : <button onClick={startLogin} className="rounded-full bg-[#C0392B] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(192,57,43,.2)] transition hover:bg-[#A93226]">Sign in</button>}
+      </div>
+    </header>
+
+    {activeView === "home" && <main>
+      <section className="mx-auto grid max-w-7xl gap-12 px-5 pb-20 pt-16 lg:grid-cols-[1.05fr_.95fr] lg:items-center lg:px-8 lg:pt-24">
+        <div><div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#E7D7CC] bg-white px-3 py-1.5 text-xs font-semibold uppercase tracking-[.16em] text-[#C0392B]"><Sparkles className="h-3.5 w-3.5" /> A calmer way to estimate fare</div><h1 className="max-w-3xl text-5xl font-semibold leading-[1.02] tracking-[-.055em] text-[#2D2520] sm:text-6xl lg:text-7xl">Make the next flight decision with <span className="text-[#C0392B]">better context.</span></h1><p className="mt-7 max-w-xl text-lg leading-8 text-[#756960]">A transparent flight price prediction workspace built around a validated regression model, clear assumptions, and a workflow that keeps the human in control.</p><div className="mt-9 flex flex-wrap gap-3"><button onClick={() => nav("predict")} className="inline-flex items-center gap-2 rounded-full bg-[#C0392B] px-6 py-3.5 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(192,57,43,.2)] transition hover:-translate-y-0.5 hover:bg-[#A93226]">Start a prediction <ArrowRight className="h-4 w-4" /></button><button onClick={() => nav("insights")} className="rounded-full border border-[#DBCBC0] bg-transparent px-6 py-3.5 text-sm font-semibold text-[#5C514A] transition hover:border-[#C0392B] hover:text-[#C0392B]">Explore the model</button></div><div className="mt-12 flex items-center gap-8 text-sm text-[#82766E]"><span className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-[#C0392B]" /> Manifest-backed</span><span className="flex items-center gap-2"><Clock3 className="h-4 w-4 text-[#C0392B]" /> Fast inference</span></div></div>
+        <div className="relative"><div className="absolute -inset-4 rounded-[2rem] bg-[#EAD3CC]/40 blur-2xl" /><div className="relative overflow-hidden rounded-[2rem] border border-[#E5D7CE] bg-white p-6 shadow-[0_24px_70px_rgba(75,48,35,.1)]"><div className="flex items-start justify-between"><div><p className="text-xs font-semibold uppercase tracking-[.16em] text-[#9D8D83]">Model snapshot</p><p className="mt-2 text-2xl font-semibold tracking-tight">{manifest?.model_name || "Flight Price Prediction"}</p></div><span className="rounded-full bg-[#F8E7E3] px-3 py-1 text-xs font-semibold text-[#A93226]">{manifest?.release_status || "loading"}</span></div><div className="mt-8 grid grid-cols-3 gap-3">{[["R²", metrics?.R2], ["MAE", metrics?.MAE], ["RMSE", metrics?.RMSE]].map(([label, value]) => <div key={String(label)} className="rounded-2xl bg-[#FAF8F5] p-4"><p className="text-xs font-semibold text-[#9D8D83]">{label}</p><p className="mt-2 text-xl font-semibold text-[#2D2520]">{manifestLoading ? "…" : formatMetric(value)}</p></div>)}</div><div className="mt-8 rounded-2xl bg-[#2D2520] p-5 text-white"><div className="flex items-center justify-between"><span className="text-sm font-medium text-[#F1E8E1]">Readiness signal</span><TrendingDown className="h-4 w-4 text-[#E9A69C]" /></div><p className="mt-3 text-3xl font-semibold">{manifest ? `${formatMetric(metrics?.R2, 3)} R²` : "—"}</p><p className="mt-1 text-sm text-[#C9B9B0]">Test-set explanatory power recorded in the release manifest.</p></div></div></div>
+      </section>
+      <section className="border-y border-[#E9DED6] bg-white/60"><div className="mx-auto grid max-w-7xl gap-4 px-5 py-10 sm:grid-cols-3 lg:px-8">{[["01", "Describe the route", "Use the same pre-booking flight attributes the model was trained to understand."], ["02", "Run the estimate", "The server validates your input and invokes the pinned Python model artifact."], ["03", "Keep the context", "Authenticated users can revisit previous estimates with model version and inputs." ]].map(([num, title, text]) => <div key={num} className="flex gap-4 rounded-2xl p-4"><span className="text-sm font-semibold text-[#C0392B]">{num}</span><div><h3 className="font-semibold">{title}</h3><p className="mt-2 text-sm leading-6 text-[#81756C]">{text}</p></div></div>)}</div></section>
+      <section className="mx-auto max-w-7xl px-5 py-16 lg:px-8"><div className="grid gap-5 md:grid-cols-3">{([[BarChart3, "Transparent by default", "Metrics, feature contract, release status, and limitations are read from the live model manifest."], [ShieldCheck, "Designed for review", "The output is an estimate to support decisions—not a guaranteed future price."], [Plane, "Made for real routes", "Use route, airline, cabin, timing, stops, duration, and booking horizon as one coherent picture."]] as const).map(([Icon, title, text]) => <div key={String(title)} className="rounded-3xl border border-[#E8DDD5] bg-white p-6 shadow-sm"><span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#F8E7E3] text-[#C0392B]"><Icon className="h-5 w-5" /></span><h3 className="mt-5 text-lg font-semibold">{title}</h3><p className="mt-2 text-sm leading-6 text-[#81756C]">{text}</p></div>)}</div></section>
+    </main>}
+
+    {activeView === "predict" && <section className="mx-auto max-w-7xl px-5 py-12 lg:px-8"><div className="max-w-3xl"><p className="text-xs font-semibold uppercase tracking-[.16em] text-[#C0392B]">Prediction workspace</p><h1 className="mt-3 text-4xl font-semibold tracking-[-.04em]">Estimate a flight price</h1><p className="mt-4 leading-7 text-[#756960]">Enter the attributes available before booking. The model returns a numerical estimate and its release metadata.</p></div><div className="mt-8 grid gap-7 lg:grid-cols-[1fr_340px]"><form onSubmit={handleSubmit} className="rounded-3xl border border-[#E6DAD2] bg-white p-6 shadow-sm sm:p-8"><div className="mb-6 rounded-2xl border border-[#EAC7C0] bg-[#FFF6F4] p-4 text-sm leading-6 text-[#7E3A31]"><strong>Important:</strong> This prediction is an estimate based on historical data and model assumptions. It is not a guaranteed future price or a live booking quote.</div>{!user && <div className="mb-6 flex items-center justify-between gap-4 rounded-2xl bg-[#2D2520] p-4 text-white"><div><p className="font-semibold">Sign in to run and save predictions</p><p className="mt-1 text-sm text-[#C9B9B0]">Your inputs and result will be available in History.</p></div><button type="button" onClick={startLogin} className="shrink-0 rounded-full bg-white px-4 py-2 text-sm font-semibold text-[#2D2520]">Sign in</button></div>}<div className="grid gap-5 sm:grid-cols-2">{(["airline", "flight", "source_city", "destination_city", "departure_time", "arrival_time", "stops", "class"] as const).map(key => <label key={key} className="block"><span className="mb-2 block text-sm font-semibold text-[#4D433D]">{formatLabel(key)}</span><select value={form[key]} onChange={event => setField(key, event.target.value)} className="h-11 w-full rounded-xl border border-[#E2D7CF] bg-[#FAF8F5] px-3 text-sm outline-none transition focus:border-[#C0392B] focus:ring-2 focus:ring-[#C0392B]/15">{(options[key] || [form[key]]).map(option => <option key={option} value={option}>{formatLabel(option)}</option>)}</select></label>)}{(["duration", "days_left"] as const).map(key => <label key={key} className="block"><span className="mb-2 block text-sm font-semibold text-[#4D433D]">{formatLabel(key)}{key === "duration" ? " (hours)" : " (days)"}</span><input required min="0" step={key === "duration" ? "0.01" : "1"} type="number" value={form[key]} onChange={event => setField(key, event.target.value)} className="h-11 w-full rounded-xl border border-[#E2D7CF] bg-[#FAF8F5] px-3 text-sm outline-none transition focus:border-[#C0392B] focus:ring-2 focus:ring-[#C0392B]/15" /></label>)}</div><button disabled={prediction.isPending || !user} type="submit" className="mt-8 inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#C0392B] px-6 text-sm font-semibold text-white transition hover:bg-[#A93226] disabled:cursor-not-allowed disabled:opacity-50">{prediction.isPending ? "Estimating…" : "Run price estimate"}<ArrowRight className="h-4 w-4" /></button>{prediction.isError && <p role="alert" className="mt-4 text-sm text-[#A93226]">We couldn't complete that estimate. Please review the inputs and try again.</p>}</form><aside className="space-y-5">{result ? <div className="rounded-3xl bg-[#2D2520] p-6 text-white shadow-sm"><p className="text-xs font-semibold uppercase tracking-[.16em] text-[#DAB8AE]">Estimated price</p><p className="mt-4 text-5xl font-semibold tracking-[-.05em]">₹{result.predictedPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p><p className="mt-3 text-sm leading-6 text-[#C9B9B0]">Model release {result.model?.model_id}. Use this as context alongside current market information.</p><button onClick={() => setResult(null)} className="mt-6 rounded-full border border-[#80665D] px-4 py-2 text-sm font-semibold text-[#F1E8E1]">New estimate</button></div> : <div className="rounded-3xl border border-[#E6DAD2] bg-white p-6"><p className="text-xs font-semibold uppercase tracking-[.16em] text-[#9D8D83]">What you’ll receive</p><ul className="mt-5 space-y-4 text-sm text-[#6E625A]">{["A numerical price estimate", "The model release used", "A saved history entry after sign in"].map(item => <li key={item} className="flex gap-3"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#C0392B]" />{item}</li>)}</ul></div>}</aside></div></section>}
+
+    {activeView === "history" && <section className="mx-auto max-w-7xl px-5 py-12 lg:px-8"><p className="text-xs font-semibold uppercase tracking-[.16em] text-[#C0392B]">Your workspace</p><h1 className="mt-3 text-4xl font-semibold tracking-[-.04em]">Prediction history</h1><p className="mt-4 text-[#756960]">Saved estimates are ordered newest first and retain their input snapshot with the model release.</p><div className="mt-8 overflow-hidden rounded-3xl border border-[#E6DAD2] bg-white shadow-sm">{history.isLoading ? <div className="p-8 text-sm text-[#81756C]">Loading your history…</div> : history.data?.length ? <div className="divide-y divide-[#EEE5DE]">{history.data.map(item => { const inputs = JSON.parse(item.inputs) as FormState; return <div key={item.id} className="grid gap-4 p-5 sm:grid-cols-[1fr_auto] sm:items-center"><div><div className="flex flex-wrap items-center gap-2"><span className="text-xl font-semibold">₹{Number(item.predictedPrice).toLocaleString(undefined, { maximumFractionDigits: 0 })}</span><span className="rounded-full bg-[#F8E7E3] px-2.5 py-1 text-xs font-semibold text-[#A93226]">{item.modelId}</span></div><p className="mt-2 text-sm text-[#756960]">{inputs.airline} · {inputs.source_city} to {inputs.destination_city} · {formatLabel(inputs.class)} · {inputs.days_left} days before departure</p><details className="mt-4"><summary className="cursor-pointer text-xs font-semibold text-[#C0392B]">View all saved inputs</summary><div className="mt-3 grid grid-cols-2 gap-2 rounded-2xl bg-[#FAF8F5] p-3 text-xs sm:grid-cols-3">{Object.entries(inputs).map(([key, value]) => <div key={key}><span className="block text-[#9D8D83]">{formatLabel(key)}</span><span className="font-semibold text-[#4D433D]">{String(value)}</span></div>)}</div></details></div><time className="text-sm text-[#9D8D83]">{new Date(item.createdAt).toLocaleString()}</time></div>})}</div> : <div className="p-10 text-center"><p className="font-semibold">No predictions yet</p><p className="mt-2 text-sm text-[#81756C]">Run your first estimate to start building a useful history.</p><button onClick={() => nav("predict")} className="mt-5 rounded-full bg-[#C0392B] px-5 py-2.5 text-sm font-semibold text-white">Make a prediction</button></div>}</div></section>}
+
+    {activeView === "insights" && <section className="mx-auto max-w-7xl px-5 py-12 lg:px-8"><p className="text-xs font-semibold uppercase tracking-[.16em] text-[#C0392B]">Model transparency</p><h1 className="mt-3 text-4xl font-semibold tracking-[-.04em]">Inside the release</h1><p className="mt-4 max-w-2xl leading-7 text-[#756960]">This panel is sourced live from the committed model manifest—never from copied dashboard values.</p><div className="mt-8 grid gap-5 md:grid-cols-4">{[["Model ID", manifest?.model_id], ["Release", manifest?.release_status], ["Target", manifest?.target], ["Features", featureCount]].map(([label, value]) => <div key={String(label)} className="rounded-2xl border border-[#E6DAD2] bg-white p-5"><p className="text-xs font-semibold uppercase tracking-[.14em] text-[#9D8D83]">{label}</p><p className="mt-3 break-words text-lg font-semibold">{String(value || "Loading…")}</p></div>)}</div><div className="mt-5 grid gap-5 lg:grid-cols-[1fr_1fr]"><div className="rounded-3xl border border-[#E6DAD2] bg-white p-6"><h2 className="text-lg font-semibold">Evaluation metrics</h2><div className="mt-5 grid grid-cols-2 gap-3">{Object.entries(metrics || {}).map(([key, value]) => <div key={key} className="rounded-2xl bg-[#FAF8F5] p-4"><p className="text-xs font-semibold text-[#9D8D83]">{key.replaceAll("_", " ")}</p><p className="mt-2 text-xl font-semibold">{formatMetric(value)}</p></div>)}</div></div><div className="rounded-3xl bg-[#2D2520] p-6 text-white"><h2 className="text-lg font-semibold">Feature contract</h2><div className="mt-5 flex flex-wrap gap-2">{manifest?.features?.map(feature => <span key={feature} className="rounded-full border border-[#80665D] px-3 py-1.5 text-xs text-[#F1E8E1]">{formatLabel(feature)}</span>)}</div><div className="mt-8 border-t border-[#5B4942] pt-5"><p className="text-sm font-semibold text-[#E9A69C]">Limitations</p><ul className="mt-3 space-y-2 text-sm leading-6 text-[#C9B9B0]">{manifest?.limitations?.map(item => <li key={item}>• {item}</li>)}</ul></div></div></div></section>}
+
+    <footer className="border-t border-[#E9DED6] bg-white/55"><div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-7 text-sm text-[#81756C] sm:flex-row sm:items-center sm:justify-between lg:px-8"><p>Flight Price AI · A transparent ML product by <span className="font-semibold text-[#5C514A]">Mohamed Salem</span></p><div className="flex gap-5"><button onClick={() => nav("insights")} className="hover:text-[#C0392B]">Model insights</button><Link href="/release-notes" className="hover:text-[#C0392B]">Release notes</Link></div></div></footer>
+  </div>;
 }

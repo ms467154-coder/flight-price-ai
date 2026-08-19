@@ -1,0 +1,34 @@
+{
+  "passed": true,
+  "row_count": 300153,
+  "column_count": 12,
+  "missing_total": 0,
+  "duplicate_rows": 0,
+  "duplicate_identifier_values": 0,
+  "issues": [],
+  "warnings": [],
+  "missing_by_column": {
+    "Unnamed: 0": 0,
+    "airline": 0,
+    "flight": 0,
+    "source_city": 0,
+    "departure_time": 0,
+    "stops": 0,
+    "arrival_time": 0,
+    "destination_city": 0,
+    "class": 0,
+    "duration": 0,
+    "days_left": 0,
+    "price": 0
+  },
+  "unexpected_categories": {},
+  "target_summary": {
+    "min": 1105.0,
+    "max": 123071.0,
+    "mean": 20889.660523133203,
+    "median": 7425.0,
+    "std": 22697.76736607447,
+    "p01": 1776.0,
+    "p99": 76736.0
+  }
+}

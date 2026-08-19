@@ -1,0 +1,277 @@
+{
+  "residual_summary": {
+    "mean": -2.349777901991488,
+    "median": 265.18881662732474,
+    "p05": -4775.588366405027,
+    "p95": 3823.5970056076194
+  },
+  "absolute_error_summary": {
+    "mean": 1796.536898286383,
+    "median": 992.1301424133271,
+    "p95": 6281.988201841217
+  },
+  "grouped": {
+    "airline": [
+      {
+        "airline": "AirAsia",
+        "count": 3250,
+        "MAE": 1006.9251826347014,
+        "bias": 49.955980485103865
+      },
+      {
+        "airline": "Air_India",
+        "count": 16334,
+        "MAE": 1732.426403142089,
+        "bias": -10.54488620023873
+      },
+      {
+        "airline": "GO_FIRST",
+        "count": 4617,
+        "MAE": 1191.711176045559,
+        "bias": -30.60343634716883
+      },
+      {
+        "airline": "Indigo",
+        "count": 8652,
+        "MAE": 1212.4722546252851,
+        "bias": 71.16913045281015
+      },
+      {
+        "airline": "SpiceJet",
+        "count": 1771,
+        "MAE": 1526.03329500417,
+        "bias": -48.60132198089639
+      },
+      {
+        "airline": "Vistara",
+        "count": 25407,
+        "MAE": 2266.418759250266,
+        "bias": -20.4495844629829
+      }
+    ],
+    "source_city": [
+      {
+        "source_city": "Bangalore",
+        "count": 10420,
+        "MAE": 1688.995015476794,
+        "bias": -35.26277060716041
+      },
+      {
+        "source_city": "Chennai",
+        "count": 7748,
+        "MAE": 2101.7886622402107,
+        "bias": 1.1150132701995745
+      },
+      {
+        "source_city": "Delhi",
+        "count": 12276,
+        "MAE": 1666.0717486522385,
+        "bias": 3.1602015825245626
+      },
+      {
+        "source_city": "Hyderabad",
+        "count": 8237,
+        "MAE": 1822.826021218885,
+        "bias": 68.03827723466563
+      },
+      {
+        "source_city": "Kolkata",
+        "count": 9165,
+        "MAE": 1924.3182765971976,
+        "bias": -45.6229934926392
+      },
+      {
+        "source_city": "Mumbai",
+        "count": 12185,
+        "MAE": 1711.9596386111095,
+        "bias": 3.007652098947896
+      }
+    ],
+    "destination_city": [
+      {
+        "destination_city": "Bangalore",
+        "count": 10079,
+        "MAE": 1581.909318606058,
+        "bias": 6.171140014992333
+      },
+      {
+        "destination_city": "Chennai",
+        "count": 8050,
+        "MAE": 1671.2086856484598,
+        "bias": 53.341278478533646
+      },
+      {
+        "destination_city": "Delhi",
+        "count": 11546,
+        "MAE": 1844.7392795329542,
+        "bias": -87.98243509818248
+      },
+      {
+        "destination_city": "Hyderabad",
+        "count": 8635,
+        "MAE": 1652.2420898381952,
+        "bias": 132.8248905197722
+      },
+      {
+        "destination_city": "Kolkata",
+        "count": 9933,
+        "MAE": 1901.8868660475782,
+        "bias": -86.9622912855703
+      },
+      {
+        "destination_city": "Mumbai",
+        "count": 11788,
+        "MAE": 2035.349524231287,
+        "bias": 8.486849011469065
+      }
+    ],
+    "stops": [
+      {
+        "stops": "one",
+        "count": 50293,
+        "MAE": 1914.5607920308767,
+        "bias": 3.826219974501736
+      },
+      {
+        "stops": "two_or_more",
+        "count": 2621,
+        "MAE": 1771.387118330743,
+        "bias": -150.1371316334175
+      },
+      {
+        "stops": "zero",
+        "count": 7117,
+        "MAE": 971.7711100570624,
+        "bias": 8.433022846581492
+      }
+    ],
+    "departure_time": [
+      {
+        "departure_time": "Afternoon",
+        "count": 9634,
+        "MAE": 1762.4469165468888,
+        "bias": -10.08495188024014
+      },
+      {
+        "departure_time": "Early_Morning",
+        "count": 13281,
+        "MAE": 1686.1167739087768,
+        "bias": 17.257431267597386
+      },
+      {
+        "departure_time": "Evening",
+        "count": 13039,
+        "MAE": 1793.234662026628,
+        "bias": 38.776367214495366
+      },
+      {
+        "departure_time": "Late_Night",
+        "count": 280,
+        "MAE": 1249.0035510276764,
+        "bias": -330.58925209264044
+      },
+      {
+        "departure_time": "Morning",
+        "count": 14009,
+        "MAE": 1924.239458656143,
+        "bias": -1.4404959529468202
+      },
+      {
+        "departure_time": "Night",
+        "count": 9788,
+        "MAE": 1817.2045100089717,
+        "bias": -68.03812721743074
+      }
+    ],
+    "arrival_time": [
+      {
+        "arrival_time": "Afternoon",
+        "count": 7683,
+        "MAE": 1790.6197492699032,
+        "bias": -19.824681664145473
+      },
+      {
+        "arrival_time": "Early_Morning",
+        "count": 3087,
+        "MAE": 1332.8575431879433,
+        "bias": 90.16419094392666
+      },
+      {
+        "arrival_time": "Evening",
+        "count": 15686,
+        "MAE": 1935.8992488951442,
+        "bias": -20.85481200282278
+      },
+      {
+        "arrival_time": "Late_Night",
+        "count": 2886,
+        "MAE": 1330.0751420982635,
+        "bias": 17.955864546000335
+      },
+      {
+        "arrival_time": "Morning",
+        "count": 12589,
+        "MAE": 1779.2675945784745,
+        "bias": 59.542006204758835
+      },
+      {
+        "arrival_time": "Night",
+        "count": 18100,
+        "MAE": 1843.7420743179437,
+        "bias": -40.95854726894534
+      }
+    ],
+    "class": [
+      {
+        "class": "Business",
+        "count": 18715,
+        "MAE": 3180.0370523227393,
+        "bias": -31.171198821031282
+      },
+      {
+        "class": "Economy",
+        "count": 41316,
+        "MAE": 1169.8497702296881,
+        "bias": 10.705524946779686
+      }
+    ],
+    "days_left": [
+      {
+        "days_left": "0-3",
+        "count": 12,
+        "MAE": 2882.8642796862673,
+        "bias": 2882.8642796862673
+      },
+      {
+        "days_left": "4-7",
+        "count": 0,
+        "MAE": NaN,
+        "bias": NaN
+      },
+      {
+        "days_left": "8-14",
+        "count": 0,
+        "MAE": NaN,
+        "bias": NaN
+      },
+      {
+        "days_left": "15-30",
+        "count": 0,
+        "MAE": NaN,
+        "bias": NaN
+      },
+      {
+        "days_left": "31-60",
+        "count": 0,
+        "MAE": NaN,
+        "bias": NaN
+      },
+      {
+        "days_left": "61+",
+        "count": 0,
+        "MAE": NaN,
+        "bias": NaN
+      }
+    ]
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "model_id": "flight-price-20260819T225716Z",
+  "model_name": "Flight Price Prediction",
+  "model_type": "HistGradientBoostingRegressor",
+  "artifact": "models/flight_price_model.joblib",
+  "artifact_sha256": "12583a088203010fdf062f158005f1a4ad1a152d281cee9acb71a6693804f94f",
+  "git_commit": "682f80dd8cd0e99c4189d1ba1b41b5cc6ca17108",
+  "dataset_hash": "c27377aa4451d4427794523f3292dd2c2dc312f29c6d880aef4df1dcf1aaf7a3",
+  "feature_schema_hash": "73193a0e3a6809e95d47fde89bfb39556caffaa0475826021c7ff1a9c8978769",
+  "python_version": "3.11.9",
+  "package_versions": {
+    "pandas": "2.3.3",
+    "numpy": "2.3.5",
+    "scikit-learn": "1.8.0",
+    "joblib": "1.5.2"
+  },
+  "features": [
+    "airline",
+    "flight",
+    "source_city",
+    "departure_time",
+    "stops",
+    "arrival_time",
+    "destination_city",
+    "class",
+    "duration",
+    "days_left"
+  ],
+  "target": "price",
+  "training_config": {
+    "method": "random train_test_split",
+    "test_size": 0.2,
+    "random_seed": 42,
+    "cv_rows": 60000
+  },
+  "hyperparameters": {
+    "categorical_features": "from_dtype",
+    "early_stopping": "auto",
+    "interaction_cst": null,
+    "l2_regularization": 1.0,
+    "learning_rate": 0.08,
+    "loss": "squared_error",
+    "max_bins": 255,
+    "max_depth": null,
+    "max_features": 1.0,
+    "max_iter": 250,
+    "max_leaf_nodes": 31,
+    "min_samples_leaf": 20,
+    "monotonic_cst": null,
+    "n_iter_no_change": 10,
+    "quantile": null,
+    "random_state": 42,
+    "scoring": "loss",
+    "tol": 1e-07,
+    "validation_fraction": 0.1,
+    "verbose": 0,
+    "warm_start": false
+  },
+  "cv_metrics": {
+    "model": "hist_gradient_boosting",
+    "CV_MAE": 1894.4549449635317,
+    "CV_RMSE": 3348.811938230537,
+    "CV_R2": 0.9782676465589281,
+    "test_MAE": 1796.536898286383,
+    "test_RMSE": 3107.855201367275,
+    "test_R2": 0.9812626651818801,
+    "training_time": 25.572048800007906,
+    "status": "evaluated"
+  },
+  "test_metrics": {
+    "MAE": 1796.536898286383,
+    "RMSE": 3107.855201367275,
+    "R2": 0.9812626651818801,
+    "MAPE": 15.024099720109737,
+    "sMAPE": 14.130377389862009,
+    "MedianAbsoluteError": 992.1301424133271,
+    "ExplainedVariance": 0.9812626758931237,
+    "mean_error": -2.349777901991488,
+    "underprediction_rate": 0.41626826139827755
+  },
+  "error_analysis": {
+    "path": "error_analysis.json"
+  },
+  "limitations": [
+    "The source dataset has no reliable capture timestamp suitable for temporal validation.",
+    "Random split may overestimate performance when repeated routes/flights occur across partitions.",
+    "The original notebook has no completed production inference endpoint; backend integration is intentionally out of scope."
+  ],
+  "intended_use": "Decision support for estimating numerical flight prices from pre-booking flight attributes; not a guarantee of future price.",
+  "release_status": "validated",
+  "created_at": "2026-08-19T22:57:16.684269+00:00"
+}

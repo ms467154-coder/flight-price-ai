@@ -1,0 +1,7 @@
+{
+  "model_manifest.json": "a8d33512c2417b6e3b9ce352cb15e96f785f166d65b889a6e9c6f92960c63cad",
+  "feature_schema.json": "73193a0e3a6809e95d47fde89bfb39556caffaa0475826021c7ff1a9c8978769",
+  "evaluation_report.json": "2749270cd4e178387dde8d2e4d2fc0278554759d93c734186c474bf037611d67",
+  "error_analysis.json": "307b4821ec67b252ebdccda5e5b8db38802364e47abda4630a565d499428dcac",
+  "models/flight_price_model.joblib": "12583a088203010fdf062f158005f1a4ad1a152d281cee9acb71a6693804f94f"
+}

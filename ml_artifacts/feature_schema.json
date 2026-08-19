@@ -1,0 +1,70 @@
+{
+  "schema_version": "1.0.0",
+  "target": "price",
+  "features": [
+    {
+      "name": "airline",
+      "datatype": "string",
+      "required": true,
+      "missing_policy": "reject at validation; encoder handles unknown categories"
+    },
+    {
+      "name": "flight",
+      "datatype": "string",
+      "required": true,
+      "missing_policy": "reject at validation; encoder handles unknown categories"
+    },
+    {
+      "name": "source_city",
+      "datatype": "string",
+      "required": true,
+      "missing_policy": "reject at validation; encoder handles unknown categories"
+    },
+    {
+      "name": "departure_time",
+      "datatype": "string",
+      "required": true,
+      "missing_policy": "reject at validation; encoder handles unknown categories"
+    },
+    {
+      "name": "stops",
+      "datatype": "string",
+      "required": true,
+      "missing_policy": "reject at validation; encoder handles unknown categories"
+    },
+    {
+      "name": "arrival_time",
+      "datatype": "string",
+      "required": true,
+      "missing_policy": "reject at validation; encoder handles unknown categories"
+    },
+    {
+      "name": "destination_city",
+      "datatype": "string",
+      "required": true,
+      "missing_policy": "reject at validation; encoder handles unknown categories"
+    },
+    {
+      "name": "class",
+      "datatype": "string",
+      "required": true,
+      "missing_policy": "reject at validation; encoder handles unknown categories"
+    },
+    {
+      "name": "duration",
+      "datatype": "number",
+      "required": true,
+      "missing_policy": "reject at validation"
+    },
+    {
+      "name": "days_left",
+      "datatype": "number",
+      "required": true,
+      "missing_policy": "reject at validation"
+    }
+  ],
+  "excluded_columns": [
+    "Unnamed: 0"
+  ],
+  "production_inference_note": "The notebook has no completed serving contract; this schema is the ML-side contract for the release pipeline."
+}

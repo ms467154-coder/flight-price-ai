@@ -1,0 +1,43 @@
+{
+  "experiment_id": "flight-price-20260819T225631Z",
+  "timestamp": "2026-08-19T22:56:31.523637+00:00",
+  "git_commit": "682f80dd8cd0e99c4189d1ba1b41b5cc6ca17108",
+  "dataset_hash": "c27377aa4451d4427794523f3292dd2c2dc312f29c6d880aef4df1dcf1aaf7a3",
+  "models": [
+    {
+      "model": "dummy_mean",
+      "CV_MAE": 19791.40240878,
+      "CV_RMSE": 22717.120372877656,
+      "CV_R2": -3.6531664557193366e-05,
+      "test_MAE": 19768.69424587037,
+      "test_RMSE": 22704.23535747973,
+      "test_R2": -5.741993791552602e-08,
+      "training_time": 4.1644426000420935,
+      "status": "evaluated"
+    },
+    {
+      "model": "ridge",
+      "CV_MAE": 4326.730632054384,
+      "CV_RMSE": 6263.214619771198,
+      "CV_R2": 0.9239843514886128,
+      "test_MAE": 4293.822465958755,
+      "test_RMSE": 6236.260132629077,
+      "test_R2": 0.9245542622201873,
+      "training_time": 9.178251699951943,
+      "status": "evaluated"
+    },
+    {
+      "model": "hist_gradient_boosting",
+      "CV_MAE": 1894.4549449635317,
+      "CV_RMSE": 3348.811938230537,
+      "CV_R2": 0.9782676465589281,
+      "test_MAE": 1796.536898286383,
+      "test_RMSE": 3107.855201367275,
+      "test_R2": 0.9812626651818801,
+      "training_time": 25.456505100009963,
+      "status": "evaluated"
+    }
+  ],
+  "winner": "hist_gradient_boosting",
+  "status": "validated"
+}
