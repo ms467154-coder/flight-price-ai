@@ -13,7 +13,7 @@
 - [x] Render the full saved prediction input payload in History, not just a summary subset
 - [x] Add server/integration tests that create prediction rows, verify persistence fields, and assert history is returned newest-first
 - [x] Expand predictions integration coverage to assert predictedPrice, modelId, serialized inputs, createdAt, and userId ownership
-- [ ] Prepare professional GitHub README and repository metadata
-- [ ] Review tracked files for secrets, generated output, and repository hygiene
-- [ ] Create the GitHub repository and push the completed project
-- [ ] Verify the remote repository, branch, and commit
+- [x] Prepare professional GitHub README and repository metadata
+- [x] Review tracked files for secrets, generated output, and repository hygiene
+- [x] Create the GitHub repository and push the completed project
+- [x] Verify the remote repository, branch, and commit

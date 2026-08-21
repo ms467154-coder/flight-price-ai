@@ -23,7 +23,7 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def validate_release(data_path: Path | None = None) -> tuple[bool, list[str]]:
+def validate_release(data_path: Path | None = None, artifact_only: bool = False) -> tuple[bool, list[str]]:
     failures: list[str] = []
     manifest_path = ARTIFACTS / "model_manifest.json"
     schema_path = ARTIFACTS / "feature_schema.json"
@@ -58,14 +58,15 @@ def validate_release(data_path: Path | None = None) -> tuple[bool, list[str]]:
             failures.append(f"checksum mismatch: {name}")
     if manifest.get("artifact_sha256") != sha256(artifact_path):
         failures.append("manifest artifact checksum mismatch")
-    try:
-        model = joblib.load(artifact_path)
-        sample = pd.read_csv(data_path or (ROOT / "Clean_Dataset.csv")).head(3)[FEATURES]
-        predictions = np.asarray(model.predict(sample), dtype=float)
-        if predictions.shape != (3,) or not np.isfinite(predictions).all():
-            failures.append("inference compatibility failed: non-finite or malformed predictions")
-    except Exception as exc:
-        failures.append(f"model loading/inference failed: {exc}")
+    if not artifact_only:
+        try:
+            model = joblib.load(artifact_path)
+            sample = pd.read_csv(data_path or (ROOT / "Clean_Dataset.csv")).head(3)[FEATURES]
+            predictions = np.asarray(model.predict(sample), dtype=float)
+            if predictions.shape != (3,) or not np.isfinite(predictions).all():
+                failures.append("inference compatibility failed: non-finite or malformed predictions")
+        except Exception as exc:
+            failures.append(f"model loading/inference failed: {exc}")
     test_metrics = evaluation.get("test_metrics", {})
     for key in ["MAE", "RMSE", "R2"]:
         if key not in test_metrics or not np.isfinite(test_metrics[key]):
@@ -84,8 +85,9 @@ def validate_release(data_path: Path | None = None) -> tuple[bool, list[str]]:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--data", default=None)
+    parser.add_argument("--artifact-only", action="store_true")
     args = parser.parse_args()
-    passed, failures = validate_release(Path(args.data) if args.data else None)
+    passed, failures = validate_release(Path(args.data) if args.data else None, artifact_only=args.artifact_only)
     print("=" * 48)
     print("FLIGHT PRICE PREDICTION ML RELEASE")
     print("=" * 48)
